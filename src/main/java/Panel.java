@@ -17,7 +17,6 @@ public class Panel extends JPanel implements ActionListener {
     private final int N_BLOCKS = 15;
     private final int SCREEN_SIZE = BLOCK_SIZE * N_BLOCKS;
     private final int MAX_GHOSTS = 12;
-    private final int PAC_SPEED = 6;
 
     private int N_GHOSTS =  6;
     private int  lives, score;
@@ -31,7 +30,6 @@ public class Panel extends JPanel implements ActionListener {
     private int req_dx, req_dy;
 
     private final int[] validSpeeds = {1,2,3,4,6,8};
-    private final int maxSpeed = 6;
     private int currentSpeed = 3;
     private short[] screenData;
     private Timer timer;
@@ -97,8 +95,7 @@ public class Panel extends JPanel implements ActionListener {
     }
 
     private void initLevel() {
-        for(int i = 0; i < N_BLOCKS * N_BLOCKS; ++i)
-            screenData[i] = levelData[i];
+        System.arraycopy(levelData, 0, screenData, 0, N_BLOCKS * N_BLOCKS);
     }
 
     private void showIntroScreen(Graphics2D graphics2D) {
@@ -133,7 +130,7 @@ public class Panel extends JPanel implements ActionListener {
         short ch;
 
         if (pacman_x % BLOCK_SIZE == 0 && pacman_y % BLOCK_SIZE == 0) {
-            pos = pacman_x / BLOCK_SIZE + N_BLOCKS * (int) (pacman_y / BLOCK_SIZE);
+            pos = pacman_x / BLOCK_SIZE + N_BLOCKS * (pacman_y / BLOCK_SIZE);
             ch = screenData[pos];
 
             if ((ch & 16) != 0) {
@@ -160,6 +157,7 @@ public class Panel extends JPanel implements ActionListener {
                 pacman_dy = 0;
             }
         }
+        int PAC_SPEED = 6;
         pacman_x = pacman_x + PAC_SPEED * pacman_dx;
         pacman_y = pacman_y + PAC_SPEED * pacman_dy;
     }
@@ -182,7 +180,7 @@ public class Panel extends JPanel implements ActionListener {
 
         for (int i = 0; i < N_GHOSTS; i++) {
             if (ghost_x[i] % BLOCK_SIZE == 0 && ghost_y[i] % BLOCK_SIZE == 0) {
-                pos = ghost_x[i] / BLOCK_SIZE + N_BLOCKS * (int) (ghost_y[i] / BLOCK_SIZE);
+                pos = ghost_x[i] / BLOCK_SIZE + N_BLOCKS * (ghost_y[i] / BLOCK_SIZE);
                 count = 0;
 
                 if ((screenData[pos] & 1) == 0 && ghost_dx[i] != 1) {
@@ -254,6 +252,7 @@ public class Panel extends JPanel implements ActionListener {
             if (N_GHOSTS < MAX_GHOSTS)
                 N_GHOSTS++;
 
+            int maxSpeed = 6;
             if (currentSpeed < maxSpeed)
                 currentSpeed++;
 
