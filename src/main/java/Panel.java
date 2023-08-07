@@ -1,56 +1,30 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-
+import java.awt.event.*;
 
 public class Panel extends JPanel implements ActionListener {
 
     private Dimension dimension;
+    private Timer timer;
     private final Font smallFont = new Font("Arial", Font.BOLD, 14);
-    private boolean inGame = false;
-    private boolean dying = false;
+    private Image heart, ghost;
+    private Image up, down, left, right;
+    private final LevelSettings levelSettings = new LevelSettings();
 
+    private boolean inGame = false;
+    private boolean isAlive = true;
     public final int BLOCK_SIZE = 24;
     private final int N_BLOCKS = 15;
     private final int SCREEN_SIZE = BLOCK_SIZE * N_BLOCKS;
     private final int MAX_GHOSTS = 12;
-
     private int N_GHOSTS =  6;
-    private int  lives, score;
+    private int lives, score;
+
     private int[] dx, dy;
     private int[] ghost_x, ghost_y, ghost_dx, ghost_dy, ghostSpeed;
-
-    private Image heart, ghost;
-    private Image up, down, left, right;
-
     private int pacman_x, pacman_y, pacman_dx, pacman_dy;
     private int req_dx, req_dy;
-
-    private final int[] validSpeeds = {1,2,3,4,6,8};
-    private int currentSpeed = 3;
     private short[] screenData;
-    private Timer timer;
-
-    private final short[] levelData = {
-            19, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 22,
-            17, 16, 16, 16, 16, 24, 16, 16, 16, 16, 16, 16, 16, 16, 20,
-            25, 24, 24, 24, 28,  0, 17, 16, 16, 16, 16, 16, 16, 16, 20,
-            0,  0,  0,  0,  0,  0, 17, 16, 16, 16, 16,  16, 16, 16, 20,
-            19, 18, 18, 18, 18, 18, 16, 16, 16, 16, 24, 24, 24, 24, 20,
-            17, 16, 16, 16, 16, 16, 16, 16, 16, 20, 0,  0,  0,   0, 21,
-            17, 16, 16, 16, 16, 16, 16, 16, 16, 20, 0,  0,  0,   0, 21,
-            17, 16, 16, 16, 24, 16, 16, 16, 16, 20, 0,  0,  0,   0, 21,
-            17, 16, 16, 20, 0, 17, 16, 16, 16, 16, 18,  18, 18, 18, 20,
-            17, 24, 24, 28, 0, 25, 24, 24, 16, 16, 16,  16, 16, 16, 20,
-            21, 0,  0,  0,  0,  0,  0,  0, 17, 16, 16,  16, 16, 16, 20,
-            17, 18, 18, 22,  0, 19, 18, 18, 16, 16, 16, 16, 16, 16, 20,
-            17, 16, 16, 20,  0, 17, 16, 16, 16, 16, 16, 16, 16, 16, 20,
-            17, 16, 16, 20,  0, 17, 16, 16, 16, 16, 16, 16, 16, 16, 20,
-            25, 24, 24, 24, 26, 24, 24, 24, 24, 24, 24, 24, 24, 24, 28
-    };
 
 
     Panel() {
@@ -68,7 +42,6 @@ public class Panel extends JPanel implements ActionListener {
         up = new ImageIcon("src/images/up.gif").getImage();
         left = new ImageIcon("src/images/left.gif").getImage();
         right = new ImageIcon("src/images/right.gif").getImage();
-
     }
 
     private void initVariables() {
@@ -91,11 +64,11 @@ public class Panel extends JPanel implements ActionListener {
         score = 0;
         initLevel();
         N_GHOSTS = 6;
-        currentSpeed = 3;
+        levelSettings.setCurrentSpeed(3);
     }
 
     private void initLevel() {
-        System.arraycopy(levelData, 0, screenData, 0, N_BLOCKS * N_BLOCKS);
+        System.arraycopy(levelSettings.getLevelData(), 0, screenData, 0, N_BLOCKS * N_BLOCKS);
     }
 
     private void showIntroScreen(Graphics2D graphics2D) {
@@ -104,7 +77,7 @@ public class Panel extends JPanel implements ActionListener {
         graphics2D.drawString(start, SCREEN_SIZE / 4, 150);
     }
 
-    private  void drawScore(Graphics2D graphics2D) {
+    private void drawScore(Graphics2D graphics2D) {
         graphics2D.setColor(Color.YELLOW);
         graphics2D.setFont(smallFont);
         String str = "Score: " + score;
@@ -115,14 +88,13 @@ public class Panel extends JPanel implements ActionListener {
     }
 
     private void playGame(Graphics2D graphics2D) {
-        if(dying)
-            death();
-        else {
+        if(isAlive) {
             movePacman();
             drawPacman(graphics2D);
             moveGhosts(graphics2D);
             checkMaze();
-        }
+        } else
+            death();
     }
 
     private void movePacman() {
@@ -148,7 +120,6 @@ public class Panel extends JPanel implements ActionListener {
                 }
             }
 
-            // Check for standstill
             if ((pacman_dx == -1 && pacman_dy == 0 && (ch & 1) != 0)
                     || (pacman_dx == 1 && pacman_dy == 0 && (ch & 4) != 0)
                     || (pacman_dx == 0 && pacman_dy == -1 && (ch & 2) != 0)
@@ -163,15 +134,14 @@ public class Panel extends JPanel implements ActionListener {
     }
 
     private void drawPacman(Graphics2D graphics2D) {
-        if (req_dx == -1) {
+        if (req_dx == -1)
             graphics2D.drawImage(left, pacman_x + 1, pacman_y + 1, this);
-        } else if (req_dx == 1) {
+         else if (req_dx == 1)
             graphics2D.drawImage(right, pacman_x + 1, pacman_y + 1, this);
-        } else if (req_dy == -1) {
+         else if (req_dy == -1)
             graphics2D.drawImage(up, pacman_x + 1, pacman_y + 1, this);
-        } else {
+         else
             graphics2D.drawImage(down, pacman_x + 1, pacman_y + 1, this);
-        }
     }
 
     private void moveGhosts(Graphics2D graphics2D) {
@@ -228,7 +198,7 @@ public class Panel extends JPanel implements ActionListener {
             if (pacman_x > (ghost_x[i] - 12) && pacman_x < (ghost_x[i] + 12)
                     && pacman_y > (ghost_y[i] - 12) && pacman_y < (ghost_y[i] + 12)
                     && inGame)
-                dying = true;
+                isAlive = false;
         }
     }
 
@@ -248,22 +218,23 @@ public class Panel extends JPanel implements ActionListener {
         }
         if(finished) {
             score += 50;
-
             if (N_GHOSTS < MAX_GHOSTS)
                 N_GHOSTS++;
 
             int maxSpeed = 6;
-            if (currentSpeed < maxSpeed)
-                currentSpeed++;
+            if (levelSettings.getCurrentSpeed() < maxSpeed)
+                levelSettings.setCurrentSpeed(levelSettings.getCurrentSpeed() + 1);
 
             initLevel();
         }
     }
 
     private void death() {
-        lives--;
+        if(score > 1)
+            lives--;
         if(lives == 0)
             inGame = false;
+
         continueLevel();
     }
 
@@ -277,12 +248,12 @@ public class Panel extends JPanel implements ActionListener {
             ghost_dy[i] = 0;
             ghost_dx[i] = dx;
             dx = -dx;
-            random = (int) (Math.random() * (currentSpeed + 1));
+            random = (int) (Math.random() * (levelSettings.getCurrentSpeed() + 1));
 
-            if(random > currentSpeed)
-                random = currentSpeed;
+            if(random > levelSettings.getCurrentSpeed())
+                random = levelSettings.getCurrentSpeed();
 
-            ghostSpeed[i] = validSpeeds[random];
+            ghostSpeed[i] = levelSettings.getValidSpeeds()[random];
         }
 
         pacman_x = 7 * BLOCK_SIZE;
@@ -291,7 +262,7 @@ public class Panel extends JPanel implements ActionListener {
         pacman_dy = 0;
         req_dx = 0;
         req_dy = 0;
-        dying = false;
+        isAlive = true;
     }
 
     public void paintComponent(Graphics graphics) {
@@ -321,7 +292,7 @@ public class Panel extends JPanel implements ActionListener {
                    graphics2D.setColor(Color.BLUE);
                    graphics2D.setStroke(new BasicStroke(5));
 
-                   if((levelData[i]) == 0)
+                   if((levelSettings.getLevelData()[i]) == 0)
                        graphics2D.fillRect(x, y, BLOCK_SIZE, BLOCK_SIZE);
                    if((screenData[i] & 1) != 0)
                        graphics2D.drawLine(x, y, x, y + BLOCK_SIZE - 1);
