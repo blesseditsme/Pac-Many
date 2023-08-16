@@ -16,7 +16,7 @@ Clone this repository or download the source code. Ensure you have Java installe
 
 How to Play:
 
-Navigate PacMan through the maze using arrow keys.
+Navigate Pac-Man through the maze using arrow keys.
 Collect dots to increase your score.
 Avoid the ghosts, touching them will result in losing a life.
 Eat power pellets to temporarily turn the ghosts blue and be able to eat them for extra points.
