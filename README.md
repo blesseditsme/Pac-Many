@@ -28,4 +28,4 @@ Use arrow Left to move Pac-Man left, arrow Right to move Pac-Man right, arrow Up
 
 Acknowledgments:
 
-This PacMan game is based on a simple Java implementation using the Swing library. It was created for educational purposes to showcase basic game development concepts. Feel free to modify, extend, or improve the game as you see fit.
+This Pac-Man game is based on a simple Java implementation using the Swing library. It was created for educational purposes to showcase basic game development concepts. Feel free to modify, extend, or improve the game as you see fit.
