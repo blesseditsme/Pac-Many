@@ -36,8 +36,8 @@ public class Panel extends JPanel implements ActionListener {
     }
 
     private void loadImages() {
-        ghost = new ImageIcon("src/images/ghost.gif").getImage();
-        heart = new ImageIcon("src/images/heart.png").getImage();
+        ghost = new ImageIcon("src/images/ghost26x26.png").getImage();
+        heart = new ImageIcon("src/images/heart20x20.png").getImage();
         down = new ImageIcon("src/images/down.gif").getImage();
         up = new ImageIcon("src/images/up.gif").getImage();
         left = new ImageIcon("src/images/left.gif").getImage();
@@ -73,12 +73,12 @@ public class Panel extends JPanel implements ActionListener {
 
     private void showIntroScreen(Graphics2D graphics2D) {
         String start = "Press SPACE to start";
-        graphics2D.setColor(Color.YELLOW);
+        graphics2D.setColor(Color.DARK_GRAY);
         graphics2D.drawString(start, SCREEN_SIZE / 4, 150);
     }
 
     private void drawScore(Graphics2D graphics2D) {
-        graphics2D.setColor(Color.YELLOW);
+        graphics2D.setColor(Color.DARK_GRAY);
         graphics2D.setFont(smallFont);
         String str = "Score: " + score;
         graphics2D.drawString(str, SCREEN_SIZE / 2 + 96, SCREEN_SIZE + 16);
@@ -269,7 +269,7 @@ public class Panel extends JPanel implements ActionListener {
         super.paintComponent(graphics);
 
         Graphics2D graphics2D = (Graphics2D) graphics;
-        graphics2D.setColor(Color.BLACK);
+        graphics2D.setColor(Color.LIGHT_GRAY);
         graphics2D.fillRect(0,0, dimension.width, dimension.height);
 
         drawMaze(graphics2D);
@@ -289,7 +289,7 @@ public class Panel extends JPanel implements ActionListener {
 
            for(y = 0; y < SCREEN_SIZE; y += BLOCK_SIZE) {
                for(x = 0; x < SCREEN_SIZE; x += BLOCK_SIZE) {
-                   graphics2D.setColor(Color.BLUE);
+                   graphics2D.setColor(Color.DARK_GRAY);
                    graphics2D.setStroke(new BasicStroke(5));
 
                    if((levelSettings.getLevelData()[i]) == 0)
@@ -336,12 +336,11 @@ public class Panel extends JPanel implements ActionListener {
                 } else if(key == KeyEvent.VK_ESCAPE && timer.isRunning()) {
                     inGame = false;
                 }
-            } else {
+            } else
                 if(key == KeyEvent.VK_SPACE) {
                     inGame = true;
                     initGame();
                 }
-            }
         }
     }
 }
