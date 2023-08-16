@@ -1,4 +1,4 @@
-# PacMany
+# Pac-Many
 This repository contains the source code for a simple PacMan game implemented in Java using the Swing library. The game features classic PacMan gameplay with ghosts, dots, and a maze. The game is controlled using arrow keys for movement and the space bar to start/restart the game.
 
 Features:
